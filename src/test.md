@@ -1,5 +1,9 @@
 # Heading 1
-
+```js
+function greet() {
+  console.log("Hello, Markdown!");
+}
+```
 ## Heading 2
 
 ### Heading 3
@@ -27,12 +31,7 @@ Code block
 with multiple lines
 ```
 
-```js
-// fenced code block with language
-function greet() {
-  console.log("Hello, Markdown!");
-}
-```
+
 
 ![Image](https://example.com/image.png)
 

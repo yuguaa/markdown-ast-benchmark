@@ -1,9 +1,10 @@
 <script setup>
+import { ref } from 'vue'
 import MarkdownIt from './components/MarkdownIt.vue'
 import Remark from './components/Remark.vue'
 import Marked from './components/Marked.vue'
 import md from './test.md?raw'
-const markdown = md;
+const markdown = ref(md)
 
 </script>
 

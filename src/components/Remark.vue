@@ -2,8 +2,11 @@
   <div class="container">
     <h2>Remark AST</h2>
     <el-row class="json">
-      <el-col :span="8" class="json">
+      <el-col :span="4" class="json">
         <json-viewer :value="ast" :expand-depth="10"></json-viewer>
+      </el-col>
+      <el-col :span="4" class="json">
+        <json-viewer :value="hast" :expand-depth="10"></json-viewer>
       </el-col>
       <el-col :span="16">
         <MarkdownRender :markdown="tip" />
@@ -13,21 +16,35 @@
 </template>
 
 <script setup>
-import { unified } from 'unified';
-import remarkParse from 'remark-parse';
-import MarkdownRender from './MarkdownRender.vue';
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import rehypeRaw from 'rehype-raw'
+import remarkRehype from 'remark-rehype'
+import MarkdownRender from './MarkdownRender.vue'
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
+import remarkGfm from 'remark-gfm'
+import remarkBreaks from 'remark-breaks'
 const props = defineProps({
   markdown: {
-    type: String,
+    type: String
   }
-});
-
+})
 
 // 创建处理器
-const processor = unified().use(remarkParse);
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm) // 支持 GFM 语法
+  .use(remarkBreaks)
+  .use(remarkRehype, {
+    allowDangerousHtml: true
+  })
+  .use(rehypeRaw)
+  // .use([rehypeSanitize])
 
 // 解析为 AST
-const ast = processor.parse(props.markdown);
+const ast = processor.parse(props.markdown)
+const hast = processor.runSync(ast);
+console.log(`🚀 ~ hast:`, hast)
 
 const tip = `
 |属性名        | 类型       | 含义                                                                 |
@@ -43,7 +60,7 @@ const tip = `
 |\`position\`    | Object     | 源代码位置，包含 \`start\` 和 \`end\`（行号、列号）。                   |
 |\`name\`        | String     | 自定义指令名称，如 \`callout\`（来自 \`::callout\` 或 \`:::callout\`）。  |
 |\`attributes\`  | Object     | 自定义指令属性，如 \`{ id: "my-id", class: "alert" }\`。              |
-`;
+`
 </script>
 
 <style scoped></style>
